@@ -13,7 +13,7 @@ import java.util.concurrent.*;
  * @author zpf
  * @createTime 2021-05-10 21:40
  * RPC的提供者（server）
- * 使用一个ServerSocket监听端口，发来一个请求，则创建一个线程（NIO-acceptor）
+ * 使用一个ServerSocket监听端口，发来一个请求，则创建一个线程（BIO方式）
  * 用线程则是伪异步io
  */
 public class RpcServer {
