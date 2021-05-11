@@ -1,7 +1,9 @@
 package com.zpf.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -19,9 +21,10 @@ import java.io.Serializable;
  * @Builder ： 建造者模式 —— 简单认为的 构造器？
  */
 @Data
-// TODO
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RpcRequest implements Serializable {
+
     // 接口名
     private String interfaceName;
 

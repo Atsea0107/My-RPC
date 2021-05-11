@@ -9,7 +9,7 @@ package com.zpf.rpc.registry;
 public interface ServiceRegistry {
     // 注册服务
     // 方法前要声明是泛型
-    <T> void registry(T service);
+    <T> void register(T service);
     // 获取服务
     Object getService(String serviceName);
 }

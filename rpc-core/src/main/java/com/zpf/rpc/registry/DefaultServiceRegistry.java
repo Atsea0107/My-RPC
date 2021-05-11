@@ -20,19 +20,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultServiceRegistry implements ServiceRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
 
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
     /*
      * 线程安全的HashSet，用来存储server要发布出去的服务的  接口实现类名
      * 保证只有一个对象。一个接口实现类只能有一个对象提供服务
      */
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     /**
      * @param service 服务器要注册服务的实例对象
      * @param <T>
      */
     @Override
-    public synchronized <T> void registry(T service) {
+    public synchronized <T> void register(T service) {
         String serviceName = service.getClass().getName();
         if(registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);

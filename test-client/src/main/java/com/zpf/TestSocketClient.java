@@ -10,7 +10,7 @@ import com.zpf.rpc.socket.client.SocketClient;
  * 测试：
  * 消费者 —— com.zpf.rpc.socket.client
  */
-public class TestClient {
+public class TestSocketClient {
     public static void main(String[] args) {
         RpcClient rpcClient = new SocketClient("127.0.0.1", 9000);
         // 使用代理类去指定的ip:port调用服务
