@@ -1,14 +1,14 @@
 package com.zpf;
 
-import registry.DefaultServiceRegistry;
-import registry.ServiceRegistry;
-import server.RpcServer;
+import com.zpf.rpc.registry.DefaultServiceRegistry;
+import com.zpf.rpc.registry.ServiceRegistry;
+import com.zpf.rpc.socket.server.SocketServer;
 
 /**
  * @author zpf
  * @createTime 2021-05-11 9:45
  * 测试：
- * 服务提供方 server
+ * 服务提供方 com.zpf.rpc.socket.server
  */
 public class TestService {
     public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class TestService {
         // 将要提供的服务对象注册到注册中心
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.registry(helloService);
-        RpcServer rpcServer = new RpcServer(serviceRegistry);
+        SocketServer rpcServer = new SocketServer(serviceRegistry);
         rpcServer.start(9000);
     }
 }

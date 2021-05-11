@@ -1,4 +1,4 @@
-package server;
+package com.zpf.rpc;
 
 import com.zpf.entity.RpcRequest;
 import com.zpf.entity.RpcResponse;

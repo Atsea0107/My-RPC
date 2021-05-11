@@ -1,4 +1,4 @@
-package registry;
+package com.zpf.rpc.registry;
 
 import com.zpf.enumeration.RpcError;
 import com.zpf.exception.RpcException;

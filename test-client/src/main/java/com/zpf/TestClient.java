@@ -1,17 +1,20 @@
 package com.zpf;
 
-import client.RpcClientProxy;
+import com.zpf.rpc.RpcClient;
+import com.zpf.rpc.RpcClientProxy;
+import com.zpf.rpc.socket.client.SocketClient;
 
 /**
  * @author zpf
  * @createTime 2021-05-11 9:49
  * 测试：
- * 消费者 —— client
+ * 消费者 —— com.zpf.rpc.socket.client
  */
 public class TestClient {
     public static void main(String[] args) {
+        RpcClient rpcClient = new SocketClient("127.0.0.1", 9000);
         // 使用代理类去指定的ip:port调用服务
-        RpcClientProxy rpcClientProxy = new RpcClientProxy("127.0.0.1", 9000);
+        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
         // 通过代理类获取实例对象
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
 

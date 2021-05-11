@@ -1,8 +1,10 @@
-package server;
+package com.zpf.rpc.socket.server;
 
+import com.zpf.rpc.RpcServer;
+import com.zpf.rpc.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import registry.ServiceRegistry;
+import com.zpf.rpc.registry.ServiceRegistry;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,12 +14,12 @@ import java.util.concurrent.*;
 /**
  * @author zpf
  * @createTime 2021-05-10 21:40
- * RPC的提供者（server）
+ * RPC的提供者（com.zpf.rpc.socket.server）
  * 使用一个ServerSocket监听端口，发来一个请求，则创建一个线程（BIO方式）
  * 用线程则是伪异步io
  */
-public class RpcServer {
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+public class SocketServer implements RpcServer {
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 50;
     private static final int KEEP_ALIVE_TIME = 60;
@@ -26,7 +28,7 @@ public class RpcServer {
     private final ServiceRegistry serviceRegistry;
     private RequestHandler requestHandler = new RequestHandler();
 
-    public RpcServer(ServiceRegistry serviceRegistry) {
+    public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         ArrayBlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = Executors.defaultThreadFactory();

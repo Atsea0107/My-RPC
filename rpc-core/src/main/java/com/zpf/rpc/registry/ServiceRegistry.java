@@ -1,4 +1,4 @@
-package registry;
+package com.zpf.rpc.registry;
 
 /**
  * @author zpf

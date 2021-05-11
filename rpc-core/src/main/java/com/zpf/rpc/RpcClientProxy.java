@@ -1,7 +1,9 @@
-package client;
+package com.zpf.rpc;
 
 import com.zpf.entity.RpcRequest;
-import com.zpf.entity.RpcResponse;
+import com.zpf.rpc.socket.client.SocketClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -10,19 +12,18 @@ import java.lang.reflect.Proxy;
 /**
  * @author zpf
  * @createTime 2021-05-10 21:40
- * RpcClient 动态代理
+ * com.zpf.rpc.RpcClient 动态代理
  * Client 端一侧没法直接生成实例对象（因为只有接口，没有具体的实现类）
  * 通过动态代理的方式生成实例
  * JDK动态代理，通过实现InvocationHandler接口，然后实现invoke方法
  */
 public class RpcClientProxy implements InvocationHandler {
+    private static final Logger logger = LoggerFactory.getLogger(RpcClientProxy.class);
     // 代理类需要去服务器获取服务
-    private String host;
-    private int port;
+    private RpcClient rpcClient;
 
-    public RpcClientProxy(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public RpcClientProxy(RpcClient rpcClient) {
+        this.rpcClient = rpcClient;
     }
 
     /**
@@ -47,13 +48,13 @@ public class RpcClientProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        logger.info("调用方法: {} # {}", method.getDeclaringClass().getName(), method.getName());
         RpcRequest rpcRequest = RpcRequest.builder()
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameters(args)
                 .paramTypes(method.getParameterTypes())
                 .build();
-        RpcClient rpcClient = new RpcClient();
-        return rpcClient.sendRequest(rpcRequest, host, port);
+        return rpcClient.sendRequest(rpcRequest);
     }
 }
