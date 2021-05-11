@@ -24,7 +24,7 @@ public class RpcServer {
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
     private final ExecutorService theadPool;
     private final ServiceRegistry serviceRegistry;
-    private RequestHandler requestHandler;
+    private RequestHandler requestHandler = new RequestHandler();
 
     public RpcServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
