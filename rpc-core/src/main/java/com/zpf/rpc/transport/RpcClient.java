@@ -1,6 +1,7 @@
-package com.zpf.rpc;
+package com.zpf.rpc.transport;
 
 import com.zpf.entity.RpcRequest;
+import com.zpf.rpc.serializer.CommonSerializer;
 
 /**
  * @author zpf
@@ -9,4 +10,6 @@ import com.zpf.entity.RpcRequest;
  */
 public interface RpcClient {
     Object sendRequest(RpcRequest rpcRequest);
+
+    void setSerializer(CommonSerializer serializer);
 }

@@ -8,7 +8,7 @@
 > 框架核心
 > Client：通过JDK动态代理获取服务的返回结果
 > Server：监听端口，并开启线程(BIO)来处理服务，返回的是结果对象的序列化结果
-## test-com.zpf.rpc.socket.server
+## test-com.zpf.rpc.transport.socket.server
 > 测试
-## test-com.zpf.rpc.socket.client
+## test-com.zpf.rpc.transport.socket.client
 > 测试

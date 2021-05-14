@@ -1,26 +1,24 @@
 package com.zpf;
 
-import com.zpf.rpc.RpcClient;
-import com.zpf.rpc.RpcClientProxy;
-import com.zpf.rpc.socket.client.SocketClient;
+import com.zpf.rpc.serializer.KryoSerializer;
+import com.zpf.rpc.transport.RpcClient;
+import com.zpf.rpc.transport.RpcClientProxy;
+import com.zpf.rpc.transport.socket.client.SocketClient;
 
 /**
  * @author zpf
  * @createTime 2021-05-11 9:49
  * 测试：
- * 消费者 —— com.zpf.rpc.socket.client
+ * 消费者 —— com.zpf.rpc.transport.socket.client
  */
 public class TestSocketClient {
     public static void main(String[] args) {
-        RpcClient rpcClient = new SocketClient("127.0.0.1", 9000);
-        // 使用代理类去指定的ip:port调用服务
-        RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient);
-        // 通过代理类获取实例对象
-        HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
-
-        // 服务端返回方法调用的返回值
-        HelloObject msg = new HelloObject(231, "ahigh is");
-        String hello = helloService.hello(msg);
-        System.out.println(hello);
+        SocketClient client = new SocketClient();
+        client.setSerializer(new KryoSerializer());
+        RpcClientProxy proxy = new RpcClientProxy(client);
+        HelloService helloService = proxy.getProxy(HelloService.class);
+        HelloObject object = new HelloObject(12, "This is a message");
+        String res = helloService.hello(object);
+        System.out.println(res);
     }
 }

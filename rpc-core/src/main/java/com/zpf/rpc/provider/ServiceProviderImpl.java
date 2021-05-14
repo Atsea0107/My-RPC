@@ -1,4 +1,4 @@
-package com.zpf.rpc.registry;
+package com.zpf.rpc.provider;
 
 import com.zpf.enumeration.RpcError;
 import com.zpf.exception.RpcException;
@@ -17,8 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * key - value ：服务名(接口名，String)：提供服务的实例对象(Object)
  * set：保存已经注册的对象
  */
-public class DefaultServiceRegistry implements ServiceRegistry {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServiceRegistry.class);
+public class ServiceProviderImpl implements ServiceProvider {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceProviderImpl.class);
 
     private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
     /*
@@ -29,10 +29,9 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 
     /**
      * @param service 服务器要注册服务的实例对象
-     * @param <T>
      */
     @Override
-    public synchronized <T> void register(T service) {
+    public synchronized <T> void addServiceProvider(T service) {
         String serviceName = service.getClass().getName();
         if(registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);
@@ -50,7 +49,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     }
 
     @Override
-    public synchronized Object getService(String serviceName) {
+    public synchronized Object getServiceProvider(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null){
             throw new RpcException(RpcError.SERVICE_NOT_FOUND);
