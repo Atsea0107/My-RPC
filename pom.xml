@@ -23,9 +23,16 @@
         <slf4j-simple.version>1.7.30</slf4j-simple.version>
         <junit.version>4.13</junit.version>
         <netty.version>4.1.50.Final</netty.version>
+        <nacos.version>1.4.2</nacos.version>
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.alibaba.nacos/nacos-client -->
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>${nacos.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
             <groupId>io.netty</groupId>

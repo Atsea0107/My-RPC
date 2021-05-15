@@ -1,6 +1,9 @@
 package com.zpf;
 
+import com.zpf.rpc.serializer.CommonSerializer;
+import com.zpf.rpc.serializer.HessianSerializer;
 import com.zpf.rpc.serializer.KryoSerializer;
+import com.zpf.rpc.serializer.ProtobufSerializer;
 import com.zpf.rpc.transport.RpcClient;
 import com.zpf.rpc.transport.RpcClientProxy;
 import com.zpf.rpc.transport.netty.client.NettyClient;
@@ -11,9 +14,7 @@ import com.zpf.rpc.transport.netty.client.NettyClient;
  */
 public class TestNettyClient {
     public static void main(String[] args) {
-        RpcClient client = new NettyClient();
-        client.setSerializer(new KryoSerializer());
-
+        RpcClient client = new NettyClient(CommonSerializer.PROTOBUF_SERIALIZER);
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "This is a message");

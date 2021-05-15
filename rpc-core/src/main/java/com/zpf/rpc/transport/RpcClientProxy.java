@@ -1,6 +1,10 @@
 package com.zpf.rpc.transport;
 
 import com.zpf.entity.RpcRequest;
+import com.zpf.entity.RpcResponse;
+import com.zpf.rpc.transport.netty.client.NettyClient;
+import com.zpf.rpc.transport.socket.client.SocketClient;
+import com.zpf.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +12,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author zpf
@@ -44,7 +50,21 @@ public class RpcClientProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         logger.info("调用方法: {} # {}", method.getDeclaringClass().getName(), method.getName());
         RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(),
-                method.getName(), args, method.getParameterTypes());
-        return rpcClient.sendRequest(rpcRequest);
+                method.getName(), args, method.getParameterTypes(), false);
+        RpcResponse rpcResponse = null;
+        if (rpcClient instanceof NettyClient) {
+            CompletableFuture<RpcResponse> completableFuture = (CompletableFuture<RpcResponse>) rpcClient.sendRequest(rpcRequest);
+            try {
+                rpcResponse = completableFuture.get();
+            } catch (InterruptedException | ExecutionException e) {
+                logger.error("方法调用请求发送失败", e);
+                return null;
+            }
+        }
+        if (rpcClient instanceof SocketClient) {
+            rpcResponse = (RpcResponse) rpcClient.sendRequest(rpcRequest);
+        }
+        RpcMessageChecker.check(rpcRequest, rpcResponse);
+        return rpcResponse.getData();
     }
 }

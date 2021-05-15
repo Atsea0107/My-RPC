@@ -2,13 +2,14 @@ package com.zpf.rpc.transport.socket.server;
 
 import com.zpf.enumeration.RpcError;
 import com.zpf.exception.RpcException;
+import com.zpf.rpc.hook.ShutdownHook;
 import com.zpf.rpc.provider.ServiceProviderImpl;
 import com.zpf.rpc.registry.NacosServiceRegistry;
 import com.zpf.rpc.registry.ServiceRegistry;
 import com.zpf.rpc.serializer.CommonSerializer;
 import com.zpf.rpc.transport.RpcServer;
 import com.zpf.rpc.handler.RequestHandler;
-import com.zpf.util.ThreadPoolFactory;
+import com.zpf.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.zpf.rpc.provider.ServiceProvider;
@@ -36,27 +37,27 @@ public class SocketServer implements RpcServer {
     private final ServiceProvider serviceProvider;
 
     public SocketServer(String host, int port) {
+        this(host, port, CommonSerializer.DEFAULT_SERIALIZER);
+    }
+
+    public SocketServer(String host, int port, int serializer) {
         this.host = host;
         this.port = port;
         threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-rpc-server");
         this.serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = new ServiceProviderImpl();
+        this.serializer = CommonSerializer.getByCode(serializer);
     }
 
     @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         if(serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        serviceProvider.addServiceProvider(service);
+        serviceProvider.addServiceProvider(service, serviceClass);
         serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         start();
-    }
-
-    @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
     }
 
     /**
@@ -65,11 +66,12 @@ public class SocketServer implements RpcServer {
     public void start(){
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             logger.info("服务器正在启动...");
+            ShutdownHook.getShutdownHook().addClearAllHook();
             Socket socket;
             // 服务器接收到连接请求后，开启一个线程去执行具体的服务
             while ((socket = serverSocket.accept()) != null){
                 logger.info("客户端连接！{}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
             }
             threadPool.shutdown();
         } catch (IOException e) {

@@ -47,16 +47,4 @@ public class NacosServiceRegistry implements ServiceRegistry {
         }
     }
 
-    @Override
-    public InetSocketAddress lookupService(String serviceName) {
-        try {
-            // 获取全部实例
-            List<Instance> instances = namingService.getAllInstances(serviceName);
-            Instance instance = instances.get(0);
-            return new InetSocketAddress(instance.getIp(), instance.getPort());
-        } catch (NacosException e) {
-            logger.error("获取服务时有错误发生:", e);
-        }
-        return null;
-    }
 }

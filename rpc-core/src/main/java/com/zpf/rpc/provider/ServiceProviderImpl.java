@@ -2,6 +2,7 @@ package com.zpf.rpc.provider;
 
 import com.zpf.enumeration.RpcError;
 import com.zpf.exception.RpcException;
+import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,25 +28,13 @@ public class ServiceProviderImpl implements ServiceProvider {
      */
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
-    /**
-     * @param service 服务器要注册服务的实例对象
-     */
     @Override
-    public synchronized <T> void addServiceProvider(T service) {
-        String serviceName = service.getClass().getName();
+    public synchronized <T> void addServiceProvider(T service, Class<T> serviceClass) {
+        String serviceName = serviceClass.getCanonicalName();
         if(registeredService.contains(serviceName)) return;
         registeredService.add(serviceName);
-
-        Class<?>[] interfaces = service.getClass().getInterfaces();
-        if (interfaces.length == 0){
-            throw new RpcException(RpcError.SERVICE_NOT_IMPLMENT_ANY_INTERFACE);
-        }
-        for (Class<?> i : interfaces){
-            // 采用这个对象实现的接口的完整类名作为服务名
-            // 一个接口对应一个对象 todo? why? 一个接口有多个实现类怎么办。就要求一个接口只能有一个实现类吗？
-            serviceMap.put(i.getCanonicalName(), service);
-        }
-        logger.info("向接口：{} 注册服务{}", interfaces, serviceName);
+        serviceMap.put(serviceName, service);
+        logger.info("向接口：{} 注册服务{}", service.getClass().getInterfaces(), serviceName);
     }
 
     @Override

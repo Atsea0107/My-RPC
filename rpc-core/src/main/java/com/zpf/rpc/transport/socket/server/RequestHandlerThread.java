@@ -23,20 +23,17 @@ public class RequestHandlerThread implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
     private Socket socket;
     private RequestHandler requestHandler;
-    private ServiceRegistry serviceRegistry;
     private CommonSerializer serializer;
 
     /**
      * 处理request的线程
      * @param socket 从socket获取输入输出流
      * @param requestHandler 具体的处理器
-     * @param serviceRegistry
-     * @param serializer
+     * @param serializer 序列化工具
      */
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, ServiceRegistry serviceRegistry, CommonSerializer serializer) {
+    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
-        this.serviceRegistry = serviceRegistry;
         this.serializer = serializer;
     }
 

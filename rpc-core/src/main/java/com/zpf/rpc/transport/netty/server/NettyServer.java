@@ -2,6 +2,7 @@ package com.zpf.rpc.transport.netty.server;
 
 import com.zpf.enumeration.RpcError;
 import com.zpf.exception.RpcException;
+import com.zpf.rpc.hook.ShutdownHook;
 import com.zpf.rpc.provider.ServiceProvider;
 import com.zpf.rpc.provider.ServiceProviderImpl;
 import com.zpf.rpc.registry.NacosServiceRegistry;
@@ -18,10 +19,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zpf
@@ -39,10 +42,15 @@ public class NettyServer implements RpcServer {
     private CommonSerializer serializer;
 
     public NettyServer(String host, int port) {
+        this(host, port, CommonSerializer.DEFAULT_SERIALIZER);
+    }
+
+    public NettyServer(String host, int port, int serializer) {
         this.host = host;
         this.port = port;
         this.serviceRegistry = new NacosServiceRegistry();
         this.serviceProvider = new ServiceProviderImpl();
+        this.serializer = CommonSerializer.getByCode(serializer);
     }
 
     @Override
@@ -67,12 +75,14 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new CommonEncoder(serializer));
-                            pipeline.addLast(new CommonDecoder());
-                            pipeline.addLast(new NettyServerHandler());
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                                    .addLast(new CommonEncoder(serializer))
+                                    .addLast(new CommonDecoder())
+                                    .addLast(new NettyServerHandler());
                         }
                     });
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
+            ShutdownHook.getShutdownHook().addClearAllHook();
             future.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
@@ -84,18 +94,13 @@ public class NettyServer implements RpcServer {
     }
 
     @Override
-    public void setSerializer(CommonSerializer serializer) {
-        this.serializer = serializer;
-    }
-
-    @Override
-    public <T> void publishService(Object service, Class<T> serviceClass) {
+    public <T> void publishService(T service, Class<T> serviceClass) {
         if (serializer == null){
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
-        serviceProvider.addServiceProvider(service);
-        serviceRegistry.register(serviceClass.getName(), new InetSocketAddress(host, port));
+        serviceProvider.addServiceProvider(service, serviceClass);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
         start();
     }
 }

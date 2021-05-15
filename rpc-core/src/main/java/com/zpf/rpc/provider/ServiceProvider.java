@@ -8,7 +8,7 @@ package com.zpf.rpc.provider;
 public interface ServiceProvider {
     // 注册服务
     // 方法前要声明是泛型
-    <T> void addServiceProvider(T service);
+    <T> void addServiceProvider(T service, Class<T> serviceClass);
     // 获取服务
     Object getServiceProvider(String serviceName);
 }

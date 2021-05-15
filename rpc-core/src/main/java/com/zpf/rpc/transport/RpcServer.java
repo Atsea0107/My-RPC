@@ -9,8 +9,6 @@ import com.zpf.rpc.serializer.CommonSerializer;
  */
 public interface RpcServer {
     void start();
-    // 设置序列化工具
-    void setSerializer(CommonSerializer serializer);
     // 发布service
-    <T> void publishService(Object service, Class<T> serviceClass);
+    <T> void publishService(T service, Class<T> serviceClass);
 }

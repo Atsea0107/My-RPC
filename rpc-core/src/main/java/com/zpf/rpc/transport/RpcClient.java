@@ -10,6 +10,4 @@ import com.zpf.rpc.serializer.CommonSerializer;
  */
 public interface RpcClient {
     Object sendRequest(RpcRequest rpcRequest);
-
-    void setSerializer(CommonSerializer serializer);
 }

@@ -17,7 +17,6 @@ import java.io.Serializable;
  * 1、调用的接口是什么
  * 2、该接口的哪个方法
  * 3、方法形参 —— 形参具体参数、形参类型
- *
  * @Builder ： 建造者模式 —— 简单认为的 构造器？
  */
 @Data
@@ -25,7 +24,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class RpcRequest implements Serializable {
 
-    // 请求号
+    /** 请求号 —— 序列化的UUID
+     * 分布式ID —— UUID 、 雪花算法（SnowFlake）
+     * UUID：UUID.randomUUID().toString()
+     * SnowFlake：Long类型 64位
+      */
     private String requestId;
     // 接口名
     private String interfaceName;
@@ -38,4 +41,7 @@ public class RpcRequest implements Serializable {
 
     // 方法的参数类型
     private Class<?>[] paramTypes;
+
+    // 是否是心跳包
+    private Boolean heartBeat;
 }
